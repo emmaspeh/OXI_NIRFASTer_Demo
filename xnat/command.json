@@ -1,0 +1,268 @@
+{
+  "name": "NIRFASTer_Full_Head_Model_Demo",
+  "label": "NIRFASTer_Full_Head_Model_Demo",
+  "description": "Runs NIRFASTer_Full_Head_Model_Demo",
+  "version": "1.0",
+  "schema-version": "1.0",
+  "image": "registry.nrg.wustl.edu/docker/nrg-repo/speh/nirfasterfullheadmodeldemo:latest",
+  "type": "docker",
+  "command-line": "chmod -R 777 /outputfiles && ./Nirfaster_basic_HD_ES /input/#HDMESH# /input/#RELAXEDOPTODES# /input/#INPUTFLAGS#",
+  "override-entrypoint": true,
+  "mounts": [
+    {
+      "name": "out",
+      "writable": true,
+      "path": "/outputfiles"
+    },
+    {
+      "name": "scan-in",
+      "writable": false,
+      "path": "/input/"
+    },
+    {
+      "name": "mat-out",
+      "writable": true,
+      "path": "/outputforsub"
+    },
+    {
+      "name": "tmp",
+      "writable": true,
+      "path": "/tmp"
+    }
+  ],
+  "environment-variables": {
+    "MCR_CACHE_ROOT": "/tmp"
+  },
+  "ports": {},
+  "inputs": [
+    {
+      "name": "HDMESH",
+      "type": "string",
+      "required": true,
+      "replacement-key": "#HDMESH#",
+      "select-values": []
+    },
+    {
+      "name": "RELAXEDOPTODES",
+      "type": "string",
+      "required": true,
+      "replacement-key": "#RELAXEDOPTODES#",
+      "select-values": []
+    },
+    {
+      "name": "INPUTFLAGS",
+      "type": "string",
+      "required": true,
+      "replacement-key": "#INPUTFLAGS#",
+      "select-values": []
+    },
+    {
+      "name": "SCAN_ID",
+      "description": "ID of the scan",
+      "type": "string",
+      "required": true,
+      "select-values": []
+    },
+    {
+      "name": "SESSION_ID",
+      "description": "ID of the session",
+      "type": "string",
+      "required": true,
+      "select-values": []
+    },
+    {
+      "name": "SESSION_LABEL",
+      "description": "Label of the session",
+      "type": "string",
+      "required": true,
+      "select-values": []
+    },
+    {
+      "name": "PROJECT",
+      "description": "Project in which session and assessor live",
+      "type": "string",
+      "required": true,
+      "select-values": []
+    }
+  ],
+  "outputs": [
+    {
+      "name": "mat-file",
+      "description": "The process output.",
+      "required": true,
+      "mount": "mat-out"
+    },
+    {
+      "name": "output",
+      "description": "The process output.",
+      "required": true,
+      "mount": "out"
+    }
+  ],
+  "xnat": [
+    {
+      "name": "NIRFASTer_Full_Head_Model_Demo",
+      "label": "NIRFASTer_Full_Head_Model_Demo",
+      "description": "NIRFASTer_Full_Head_Model_Demo",
+      "contexts": [
+        "xnat:imageScanData"
+      ],
+      "external-inputs": [
+        {
+          "name": "scan",
+          "description": "Input scan",
+          "type": "Scan",
+          "matcher": "",
+          "required": true,
+          "load-children": true
+        }
+      ],
+      "derived-inputs": [
+        {
+          "name": "scanResource",
+          "type": "Resource",
+          "matcher": "@.label =~ /.*FNIRS.*/i",
+          "required": true,
+          "provides-files-for-command-mount": "scan-in",
+          "user-settable": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "scan",
+          "multiple": false
+        },
+        {
+          "name": "HDMESH",
+          "type": "File",
+          "matcher": "@.label =~ /.*mesh_input.mat.*/i",
+          "required": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "scanResource",
+          "multiple": false
+        },
+        {
+          "name": "HDMESH-name",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "HDMESH",
+          "user-settable": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "HDMESH",
+          "derived-from-xnat-object-property": "name",
+          "multiple": false
+        },
+        {
+          "name": "RELAXEDOPTODES",
+          "type": "File",
+          "matcher": "@.label =~ /.*relaxed_optodes.mat.*/i",
+          "required": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "scanResource",
+          "multiple": false
+        },
+        {
+          "name": "RELAXEDOPTODES-name",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "RELAXEDOPTODES",
+          "user-settable": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "RELAXEDOPTODES",
+          "derived-from-xnat-object-property": "name",
+          "multiple": false
+        },
+        {
+          "name": "INPUTFLAGS",
+          "type": "File",
+          "matcher": "@.label =~ /.*input_flags.*/i",
+          "required": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "scanResource",
+          "multiple": false
+        },
+        {
+          "name": "INPUTFLAGS-name",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "INPUTFLAGS",
+          "user-settable": true,
+          "load-children": true,
+          "derived-from-wrapper-input": "INPUTFLAGS",
+          "derived-from-xnat-object-property": "name",
+          "multiple": false
+        },
+        {
+          "name": "scan_id",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "SCAN_ID",
+          "load-children": true,
+          "derived-from-wrapper-input": "scan",
+          "derived-from-xnat-object-property": "id",
+          "multiple": false
+        },
+        {
+          "name": "session",
+          "description": "Session",
+          "type": "Session",
+          "required": true,
+          "load-children": false,
+          "derived-from-wrapper-input": "scan",
+          "multiple": false
+        },
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "SESSION_ID",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "id",
+          "multiple": false
+        },
+        {
+          "name": "session_label",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "SESSION_LABEL",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "label",
+          "multiple": false
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "PROJECT",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "project-id",
+          "multiple": false
+        }
+      ],
+      "output-handlers": [
+        {
+          "name": "scanResource",
+          "accepts-command-output": "output",
+          "as-a-child-of": "scan",
+          "type": "Resource",
+          "label": "RESULTS",
+          "tags": []
+        },
+        {
+          "name": "scanResource2",
+          "accepts-command-output": "mat-file",
+          "as-a-child-of": "scan",
+          "type": "Resource",
+          "label": "RESULTS",
+          "tags": []
+        }
+      ]
+    }
+  ],
+  "reserve-memory": 15360,
+  "limit-memory": 15360,
+  "container-labels": {},
+  "generic-resources": {},
+  "ulimits": {},
+  "secrets": []
+}
